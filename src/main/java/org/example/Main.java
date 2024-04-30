@@ -23,7 +23,6 @@ public class Main {
 
         if (minDuration.isPresent()) {
             participants.values().stream()
-                    .filter(p -> p.races().size() == 3)
                     .filter(p -> p.races().stream()
                             .map(race -> Duration.between(LocalTime.MIN, race.time()))
                             .reduce(Duration::plus)

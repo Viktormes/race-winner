@@ -28,51 +28,7 @@ public class RaceRecordReader {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(filePath))))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (!line.contains(",")) {
-                    logger.log(Level.WARNING, "Ignoring line without commas: " + line);
-                    continue;
-                }
-                String[] parts = line.split(",");
-
-                if (parts.length <= 4) {
-                    logger.log(Level.WARNING, "Ignoring line with less than 5 parts: " + line);
-                    continue;
-                }
-
-                if (parts.length > 5) {
-                    logger.log(Level.WARNING, "Ignoring line with more than 5 parts: " + line);
-                    continue;
-                }
-
-                int id;
-                try {
-                    id = Integer.parseInt(parts[1]);
-                } catch (NumberFormatException e) {
-                    logger.log(Level.WARNING, "Ignoring line with invalid id: " + line);
-                    continue;
-                }
-
-                String name = parts[0];
-
-                LocalTime startingTime;
-                LocalTime endingTime;
-                try {
-                    startingTime = LocalTime.parse(parts[2]);
-                    endingTime = LocalTime.parse(parts[3]);
-                } catch (DateTimeParseException e) {
-                    logger.log(Level.WARNING, "Ignoring line with invalid time format: " + line);
-                    continue;
-                }
-
-                String raceType = parts[4];
-
-                if (!raceType.equals("eggRace") && !raceType.equals("sackRace") && !raceType.equals("1000m")) {
-                    logger.log(Level.WARNING, "Ignoring line with invalid race type: " + line);
-                    continue;
-                }
-
-                namesByParticipant.putIfAbsent(id, name);
-                racesByParticipant.computeIfAbsent(id, k -> new ArrayList<>()).add(new Race(raceType, endingTime.minusHours(startingTime.getHour()).minusMinutes(startingTime.getMinute())));
+                parseLine(line, racesByParticipant, namesByParticipant);
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error reading file", e);
@@ -84,5 +40,57 @@ public class RaceRecordReader {
         }
 
         return participants;
+    }
+
+    private void parseLine(String line, Map<Integer, List<Race>> racesByParticipant, Map<Integer, String> namesByParticipant) {
+        if (!line.contains(",")) {
+            logger.log(Level.WARNING, "Ignoring line without commas: " + line);
+            return;
+        }
+        String[] parts = line.split(",");
+
+        if (parts.length <= 4) {
+            logger.log(Level.WARNING, "Ignoring line with less than 5 parts: " + line);
+            return;
+        }
+
+        if (parts.length > 5) {
+            logger.log(Level.WARNING, "Ignoring line with more than 5 parts: " + line);
+            return;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Ignoring line with invalid id: " + line);
+            return;
+        }
+
+        String name = parts[0];
+
+        LocalTime startingTime;
+        LocalTime endingTime;
+        try {
+            startingTime = LocalTime.parse(parts[2]);
+            endingTime = LocalTime.parse(parts[3]);
+        } catch (DateTimeParseException e) {
+            logger.log(Level.WARNING, "Ignoring line with invalid time format: " + line);
+            return;
+        }
+
+        String raceType = parts[4];
+
+        if (!raceType.equals("eggRace") && !raceType.equals("sackRace") && !raceType.equals("1000m")) {
+            logger.log(Level.WARNING, "Ignoring line with invalid race type: " + line);
+            return;
+        }
+
+        namesByParticipant.putIfAbsent(id, name);
+        racesByParticipant.computeIfAbsent(id, k -> new ArrayList<>()).add(createRace(raceType, startingTime, endingTime));
+    }
+
+    private Race createRace(String raceType, LocalTime startingTime, LocalTime endingTime) {
+        return new Race(raceType, endingTime.minusHours(startingTime.getHour()).minusMinutes(startingTime.getMinute()));
     }
 }
