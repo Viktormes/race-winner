@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +28,10 @@ public class RaceRecordReader {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(filePath))))) {
             String line;
             while ((line = br.readLine()) != null) {
+                if (!line.contains(",")) {
+                    logger.log(Level.WARNING, "Ignoring line without commas: " + line);
+                    continue;
+                }
                 String[] parts = line.split(",");
 
                 if (parts.length > 5) {
@@ -47,8 +52,17 @@ public class RaceRecordReader {
                 }
 
                 String name = parts[0];
-                LocalTime startingTime = LocalTime.parse(parts[2]);
-                LocalTime endingTime = LocalTime.parse(parts[3]);
+
+                LocalTime startingTime;
+                LocalTime endingTime;
+                try {
+                    startingTime = LocalTime.parse(parts[2]);
+                    endingTime = LocalTime.parse(parts[3]);
+                } catch (DateTimeParseException e) {
+                    logger.log(Level.WARNING, "Ignoring line with invalid time format: " + line);
+                    continue;
+                }
+
                 String raceType = parts[4];
 
                 if (!raceType.equals("eggRace") && !raceType.equals("sackRace") && !raceType.equals("1000m")) {
