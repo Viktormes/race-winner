@@ -41,7 +41,7 @@ public class Main {
                         long minutes = averageSeconds / 60;
                         long seconds = averageSeconds % 60;
 
-                        System.out.println("The average race time for " + winnerParticipant.name() + " is: " + minutes + " minutes and " + seconds + " seconds");
+                        System.out.println("The average race time for the " + winnerParticipant.name() + " is: " + minutes + " minutes and " + seconds + " seconds");
                     });
         } else {
             System.out.println("No winner found");

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class RaceRecordReader {
 
     private final String filePath;
-    private static Logger logger = Logger.getLogger(RaceRecordReader.class.getName());
+    private static final Logger logger = Logger.getLogger(RaceRecordReader.class.getName());
 
     public RaceRecordReader(String filePath) {
         this.filePath = filePath;
@@ -34,12 +34,13 @@ public class RaceRecordReader {
                 }
                 String[] parts = line.split(",");
 
-                if (parts.length > 5) {
-                    logger.log(Level.WARNING, "Ignoring line with more than 5 parts: " + line);
-                    continue;
-                }
                 if (parts.length <= 4) {
                     logger.log(Level.WARNING, "Ignoring line with less than 5 parts: " + line);
+                    continue;
+                }
+
+                if (parts.length > 5) {
+                    logger.log(Level.WARNING, "Ignoring line with more than 5 parts: " + line);
                     continue;
                 }
 
