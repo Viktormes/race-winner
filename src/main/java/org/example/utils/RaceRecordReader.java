@@ -33,13 +33,28 @@ public class RaceRecordReader {
                     logger.log(Level.WARNING, "Ignoring line with more than 5 parts: " + line);
                     continue;
                 }
+                if (parts.length <= 4) {
+                    logger.log(Level.WARNING, "Ignoring line with less than 5 parts: " + line);
+                    continue;
+                }
 
+                int id;
+                try {
+                    id = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.WARNING, "Ignoring line with invalid id: " + line);
+                    continue;
+                }
 
                 String name = parts[0];
-                int id = Integer.parseInt(parts[1]);
                 LocalTime startingTime = LocalTime.parse(parts[2]);
                 LocalTime endingTime = LocalTime.parse(parts[3]);
                 String raceType = parts[4];
+
+                if (!raceType.equals("eggRace") && !raceType.equals("sackRace") && !raceType.equals("1000m")) {
+                    logger.log(Level.WARNING, "Ignoring line with invalid race type: " + line);
+                    continue;
+                }
 
                 namesByParticipant.putIfAbsent(id, name);
                 racesByParticipant.computeIfAbsent(id, k -> new ArrayList<>()).add(new Race(raceType, endingTime.minusHours(startingTime.getHour()).minusMinutes(startingTime.getMinute())));

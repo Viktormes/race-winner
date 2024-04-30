@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.entity.Participant;
-import org.example.entity.Race;
 import org.example.utils.RaceRecordReader;
 
 import java.time.Duration;
@@ -14,21 +13,36 @@ public class Main {
         RaceRecordReader reader = new RaceRecordReader("/race-results.txt");
         Map<Integer, Participant> participants = reader.readRecords();
 
-        Optional<Participant> winner = participants.values().stream()
+        Optional<Duration> minDuration = participants.values().stream()
                 .filter(p -> p.races().size() == 3)
-                .min((p1, p2) -> p1.races().stream()
+                .map(p -> p.races().stream()
                         .map(race -> Duration.between(LocalTime.MIN, race.time()))
                         .reduce(Duration::plus)
-                        .orElseThrow()
-                        .compareTo(
-                                p2.races().stream()
-                                        .map(race -> Duration.between(LocalTime.MIN, race.time()))
-                                        .reduce(Duration::plus)
-                                        .orElseThrow()
-                        ));
+                        .orElseThrow())
+                .min(Duration::compareTo);
 
-        if (winner.isPresent()) {
-            System.out.println("The winner is " + winner.get().name() + " with id " + winner.get().id());
+        if (minDuration.isPresent()) {
+            participants.values().stream()
+                    .filter(p -> p.races().size() == 3)
+                    .filter(p -> p.races().stream()
+                            .map(race -> Duration.between(LocalTime.MIN, race.time()))
+                            .reduce(Duration::plus)
+                            .orElseThrow()
+                            .equals(minDuration.get()))
+                    .forEach(winnerParticipant -> {
+                        System.out.println("The winner is " + winnerParticipant.name() + " with id " + winnerParticipant.id());
+
+                        Duration totalDuration = winnerParticipant.races().stream()
+                                .map(race -> Duration.between(LocalTime.MIN, race.time()))
+                                .reduce(Duration::plus)
+                                .orElseThrow();
+
+                        long averageSeconds = totalDuration.getSeconds() / winnerParticipant.races().size();
+                        long minutes = averageSeconds / 60;
+                        long seconds = averageSeconds % 60;
+
+                        System.out.println("The average race time for " + winnerParticipant.name() + " is: " + minutes + " minutes and " + seconds + " seconds");
+                    });
         } else {
             System.out.println("No winner found");
         }
