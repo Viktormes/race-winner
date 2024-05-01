@@ -28,7 +28,8 @@ public class RaceAnalyzer {
                             .orElseThrow()
                             .equals(minDuration.get()))
                     .forEach(winnerParticipant -> {
-                        System.out.println("The winner is " + winnerParticipant.name() + " with id " + winnerParticipant.id());
+                        System.out.println("The winner is "
+                                + winnerParticipant.name() + " with id " + winnerParticipant.id());
 
                         Duration totalDuration = winnerParticipant.races().stream()
                                 .map(race -> Duration.between(LocalTime.MIN, race.time()))
@@ -39,7 +40,8 @@ public class RaceAnalyzer {
                         long minutes = averageSeconds / 60;
                         long seconds = averageSeconds % 60;
 
-                        System.out.println("The average race time for the " + winnerParticipant.name() + " is: " + minutes + " minutes and " + seconds + " seconds");
+                        System.out.println("The average race time for the " + winnerParticipant.name()
+                                + " is: " + minutes + " minutes and " + seconds + " seconds");
                     });
         } else {
             System.out.println("No winner found");
