@@ -44,18 +44,18 @@ public class RaceRecordReader {
 
     private void parseLine(String line, Map<Integer, List<Race>> racesByParticipant, Map<Integer, String> namesByParticipant) {
         if (!line.contains(",")) {
-            logger.log(Level.WARNING, "Ignoring line without commas: " + line);
+            logger.log(Level.INFO, "Ignoring line without commas: " + line);
             return;
         }
         String[] parts = line.split(",");
 
         if (parts.length <= 4) {
-            logger.log(Level.WARNING, "Ignoring line with less than 5 parts: " + line);
+            logger.log(Level.INFO, "Ignoring line with less than 5 parts: " + line);
             return;
         }
 
         if (parts.length > 5) {
-            logger.log(Level.WARNING, "Ignoring line with more than 5 parts: " + line);
+            logger.log(Level.INFO, "Ignoring line with more than 5 parts: " + line);
             return;
         }
 
@@ -63,7 +63,7 @@ public class RaceRecordReader {
         try {
             id = Integer.parseInt(parts[1]);
         } catch (NumberFormatException e) {
-            logger.log(Level.WARNING, "Ignoring line with invalid id: " + line);
+            logger.log(Level.INFO, "Ignoring line with invalid id: " + line);
             return;
         }
 
@@ -75,14 +75,14 @@ public class RaceRecordReader {
             startingTime = LocalTime.parse(parts[2]);
             endingTime = LocalTime.parse(parts[3]);
         } catch (DateTimeParseException e) {
-            logger.log(Level.WARNING, "Ignoring line with invalid time format: " + line);
+            logger.log(Level.INFO, "Ignoring line with invalid time format: " + line);
             return;
         }
 
         String raceType = parts[4];
 
         if (!raceType.equals("eggRace") && !raceType.equals("sackRace") && !raceType.equals("1000m")) {
-            logger.log(Level.WARNING, "Ignoring line with invalid race type: " + line);
+            logger.log(Level.INFO, "Ignoring line with invalid race type: " + line);
             return;
         }
 
