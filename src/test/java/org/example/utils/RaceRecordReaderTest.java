@@ -6,10 +6,10 @@ import java.util.Map;
 
     class RaceRecordReaderTest {
 
-        private RaceRecordReader raceRecordReader;
+        private RaceRecordReader raceRecordReaderMock;
 
       public void setUp() {
-            raceRecordReader = new RaceRecordReader("/test-race-results.txt");
+            raceRecordReaderMock = new RaceRecordReader("/test-race-results.txt");
         }
 
         public static void main(String[] args) {
@@ -25,7 +25,7 @@ import java.util.Map;
 
         public void readRecordsAmountOfParticipants() {
             setUp();
-            Map<Integer, Participant> participants = raceRecordReader.readRecords();
+            Map<Integer, Participant> participants = raceRecordReaderMock.readRecords();
 
             assert participants.size() == 3 : "Expected 3 participants, but got " + participants.size();
         }
