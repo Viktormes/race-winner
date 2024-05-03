@@ -26,5 +26,5 @@ replay_pid*
 ## target folder at any level of the project structue
 
 **/target
-
-/target 
+target/
+.idea
