@@ -91,6 +91,8 @@ public class RaceRecordReader {
     }
 
     private Race createRace(String raceType, LocalTime startingTime, LocalTime endingTime) {
-        return new Race(raceType, endingTime.minusHours(startingTime.getHour()).minusMinutes(startingTime.getMinute()));
+        return new Race(raceType, endingTime.minusHours(startingTime.getHour())
+                .minusMinutes(startingTime.getMinute())
+                .minusSeconds(startingTime.getSecond()));
     }
 }
